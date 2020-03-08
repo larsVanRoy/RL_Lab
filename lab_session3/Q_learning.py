@@ -4,13 +4,11 @@ import random
 
 from gym.envs.registration import register
 
-
-
 # code to set a gym config
 # 4x4 environment
-kwargs = {'map_name': '4x4', 'is_slippery': False}
+# kwargs = {'map_name': '4x4', 'is_slippery': False}
 # 8x8 environment
-# kwargs = {'map_name': '8x8', 'is_slippery': True}
+kwargs = {'map_name': '8x8', 'is_slippery': True}
 register(
     id='FrozenLakeNotSlippery-v0',
     entry_point='gym.envs.toy_text:FrozenLakeEnv',
@@ -19,19 +17,16 @@ register(
     reward_threshold=0.8196
 )
 
-
 # code to set environment
 env = gym.make("FrozenLakeNotSlippery-v0")
 
 # actions
 action_size = env.action_space.n
-# statess
+
+# states
 state_size = env.observation_space.n
 
-
-# TODO Declare your q-table based on number of states and actions.
-
-qtable = 
+qtable = np.zeros((state_size, action_size), dtype=np.float)
 
 
 class Agent(object):
@@ -49,14 +44,14 @@ class Agent(object):
         qtable: numpy 2d-array
         """
         self.qtable = qtable
-        self.learning_rate = 0.1           # Learning rate
-        self.gamma = 0.95                  # Discounting rate
+        self.learning_rate = 0.1  # Learning rate
+        self.gamma = 0.95  # Discounting rate
 
         # Exploration parameters
-        self.epsilon = 1.0                 # Exploration rate
-        self.max_epsilon = 1.0             # Exploration probability at start
-        self.min_epsilon = 0.01            # Minimum exploration probability
-        self.decay_rate = 0.001             # Exponential decay rate for exploration prob
+        self.epsilon = 1.0  # Exploration rate
+        self.max_epsilon = 1.0  # Exploration probability at start
+        self.min_epsilon = 0.01  # Minimum exploration probability
+        self.decay_rate = 0.00001  # Exponential decay rate for exploration prob
 
     def act(self, state, exp_exp_tradeoff):
         """
@@ -76,9 +71,14 @@ class Agent(object):
             action to take
 
         """
+        if exp_exp_tradeoff <= self.epsilon:
+            return np.random.randint(0, 4, 1)[0]
+        else:
+            return np.argmax(self.qtable[state])
+
         # TODO Write code to check if your agent wants to explore or exploit
 
-    def learn(self, state, action, reward, new_state):
+    def learn(self, state: np.int64, action: np.int64, reward, new_state):
         """
         Function to update the q table
 
@@ -97,7 +97,10 @@ class Agent(object):
             new state after action
 
         """
-        #TODO Write code to update q-table
+        # TODO Write code to update q-table
+        current = self.qtable[state][action]
+        temp = current + self.learning_rate * (reward + self.gamma * max(self.qtable[new_state]) - current)
+        self.qtable[state][action] = temp
 
     def update_epsilon(self, episode):
         """
@@ -112,8 +115,9 @@ class Agent(object):
         -------
         """
         self.epsilon = self.min_epsilon + \
-            (self.max_epsilon - self.min_epsilon) * \
-            np.exp(-self.decay_rate*episode)
+                       (self.max_epsilon - self.min_epsilon) * \
+                       np.exp(-self.decay_rate * episode)
+
 
 class Trainer(object):
     """Class to train the agent."""
@@ -131,13 +135,12 @@ class Trainer(object):
 
         """
         # config of your run.
-        self.total_episodes = 20000        # Total episodes
-        self.max_steps = 99                # Max steps per episode
+        self.total_episodes = 20000  # Total episodes
+        self.max_steps = 2000  # Max steps per episode
 
         # q-table
         self.qtable = qtable
         self.agent = Agent(self.qtable)
-
 
     def run(self):
         """
@@ -185,13 +188,13 @@ class Trainer(object):
             episode += 1
 
             # update your exploration rate
-            agent.update_epsilon(episode)
+            self.agent.update_epsilon(episode)
 
             # global reward
             rewards.append(self.total_rewards)
 
         # print your scores
-        print("Score over time: " + str(sum(rewards)/self.total_episodes))
+        print("Score over time: " + str(sum(rewards) / self.total_episodes))
 
         # print the qtable
         print(self.agent.qtable)
