@@ -19,7 +19,7 @@ Actions
 import gym
 from IPython.display import clear_output
 from time import sleep
-env = gym.make("Taxi-v2")
+env = gym.make("Taxi-v3")
 env.render()
 env.reset()
 
@@ -45,7 +45,7 @@ while not done:
 
     if reward == -10:
         penalties += 1
-    
+
     # Put each rendered frame into dict for animation
     frames.append({
         'frame': env.render(mode='ansi'),
@@ -65,7 +65,7 @@ print("Penalties incurred: {}".format(penalties))
 def print_frames(frames):
     for i, frame in enumerate(frames):
         clear_output(wait=True)
-        print(frame['frame'].getvalue())
+        print(frame['frame'])
         print(f"Timestep: {i + 1}")
         print(f"State: {frame['state']}")
         print(f"Action: {frame['action']}")
