@@ -16,12 +16,12 @@ import mdp, util
 import numpy as np
 from learningAgents import ValueEstimationAgent
 
-class ValueIterationAgent(ValueEstimationAgent):
+class PolicyIterationAgent(ValueEstimationAgent):
     """
         * Please read learningAgents.py before reading this.*
 
-        A ValueIterationAgent takes a Markov decision process
-        (see mdp.py) on initialization and runs value iteration
+        A PolicyIterationAgent takes a Markov decision process
+        (see mdp.py) on initialization and runs policy iteration
         for a given number of iterations using the supplied
         discount factor.
     """
@@ -43,11 +43,15 @@ class ValueIterationAgent(ValueEstimationAgent):
         print("using discount {}".format(discount))
         self.iterations = iterations
         self.values = util.Counter() # A Counter is a dict with default 0
-        # TODO: Value Iteration
-        # As the doc above indicates, this should run the valueIteration update
-        # a given number of iterations; there is no output, but the values
-        # should be done updating at the end.
 
+        delta = 0.01
+        # TODO: Implement Policy Iteration.
+        # Exit either when the number of iterations is reached,
+        # OR until convergence (L2 distance < delta).
+        # Print the number of iterations to convergence.
+        # To make the comparison FAIR, one iteration is a single sweep over states.
+        # Compute the number of steps until policy convergence, but do not stop
+        # the algorithm until values converge.
 
     def getValue(self, state):
         """

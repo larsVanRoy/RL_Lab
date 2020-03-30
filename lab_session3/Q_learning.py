@@ -4,6 +4,24 @@ import random
 
 from gym.envs.registration import register
 
+def allmax(a):
+    """ Returns all occurences of the max """
+    if len(a) == 0:
+        return []
+    all_ = [0]
+    max_ = a[0]
+    for i in range(1, len(a)):
+        if a[i] > max_:
+            all_ = [i]
+            max_ = a[i]
+        elif a[i] == max_:
+            all_.append(i)
+    return all_
+
+def my_argmax(v):
+    """ Breaks ties randomly. """
+    return random.choice(allmax(v))
+
 # code to set a gym config
 # 4x4 environment
 # kwargs = {'map_name': '4x4', 'is_slippery': False}
@@ -53,17 +71,15 @@ class Agent(object):
         self.min_epsilon = 0.01  # Minimum exploration probability
         self.decay_rate = 0.0001  # Exponential decay rate for exploration prob
 
-    def act(self, state, exp_exp_tradeoff):
+    def act(self, state):
         """
-        Function where agent acts.
+        Function where agent acts with policy eps-greedy.
+        Epsilon is updated outside this method.
 
         Parameters
         ----------
         state: numpy int64
             current state of the environment
-
-        exp_exp_tradeoff: float
-            exploration and exploitation tradeoff
 
         Returns
         -------
@@ -71,12 +87,10 @@ class Agent(object):
             action to take
 
         """
-        if exp_exp_tradeoff <= self.epsilon:
-            return np.random.randint(0, 4, 1)[0]
+        if np.random.rand() < self.epsilon:
+            return np.random.randint(action_size)
         else:
-            return np.argmax(self.qtable[state])
-
-        # TODO Write code to check if your agent wants to explore or exploit
+            return my_argmax(self.qtable[state])
 
     def learn(self, state: np.int64, action: np.int64, reward, new_state):
         """
@@ -97,10 +111,8 @@ class Agent(object):
             new state after action
 
         """
-        # TODO Write code to update q-table
         current = self.qtable[state][action]
-        temp = current + self.learning_rate * (reward + self.gamma * max(self.qtable[new_state]) - current)
-        self.qtable[state][action] = temp
+        self.qtable[state][action] += self.learning_rate * (reward + self.gamma * max(self.qtable[new_state]) - current)
 
     def update_epsilon(self, episode):
         """
@@ -166,7 +178,7 @@ class Trainer(object):
                 exp_exp_tradeoff = random.uniform(0, 1)
 
                 # take an action
-                action = self.agent.act(state, exp_exp_tradeoff)
+                action = self.agent.act(state)
 
                 # get feedback from environment
                 new_state, reward, done, info = env.step(action)
@@ -222,7 +234,8 @@ def test():
             new_state, reward, done, info = env.step(action)
             # print(reward)
             if done:
-                print('\n \x1b[6;30;42m' + 'Success!' + '\x1b[0m')
+                if reward == 1:
+                    print('\n \x1b[6;30;42m' + 'Success!' + '\x1b[0m')
                 action = np.argmax(qtable[state, :])
                 # print(action)
                 # env.render()
