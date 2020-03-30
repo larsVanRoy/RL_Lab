@@ -51,7 +51,7 @@ class Agent(object):
         self.epsilon = 1.0  # Exploration rate
         self.max_epsilon = 1.0  # Exploration probability at start
         self.min_epsilon = 0.01  # Minimum exploration probability
-        self.decay_rate = 0.00001  # Exponential decay rate for exploration prob
+        self.decay_rate = 0.0001  # Exponential decay rate for exploration prob
 
     def act(self, state, exp_exp_tradeoff):
         """
@@ -135,8 +135,8 @@ class Trainer(object):
 
         """
         # config of your run.
-        self.total_episodes = 20000  # Total episodes
-        self.max_steps = 2000  # Max steps per episode
+        self.total_episodes = 100  # Total episodes
+        self.max_steps = 1000  # Max steps per episode
 
         # q-table
         self.qtable = qtable
@@ -207,25 +207,25 @@ class Trainer(object):
 
 def test():
     """Function to test your agent."""
-    for episode in range(5):
+    for episode in range(100):
         state = env.reset()
         print(type(state))
         step = 0
         done = False
         print("*****************************")
         print("EPISODE ", episode)
-        for step in range(99):
-            env.render()
+        for step in range(1000):
+            # env.render()
             # Take the action (index) that have the maximum expected future reward given that state
             action = np.argmax(qtable[state, :])
-            print(action)
+            # print(action)
             new_state, reward, done, info = env.step(action)
-            print(reward)
+            # print(reward)
             if done:
                 print('\n \x1b[6;30;42m' + 'Success!' + '\x1b[0m')
                 action = np.argmax(qtable[state, :])
-                print(action)
-                env.render()
+                # print(action)
+                # env.render()
                 break
             state = new_state
     env.close()
