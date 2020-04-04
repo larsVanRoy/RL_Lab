@@ -1,0 +1,14 @@
+
+\documentclass{article}% use option titlepage to get the title on a page of its own.
+\title{lab session 3}
+
+\date{\today}
+\author{Lars Van Roy\\s0161083\\larsvaroy@student.uantwerpen.be}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+\begin{document}
+	\maketitle
+	For this lab we were asked to create Qlearning algorithm with paramaters capable of finding a solution for an 8x8 grid. I chose to alter the decay rate of the epsilon parameter to 0.0001, so that we would be far less likely to get stuck in a local maxima. Furthermore I also increased the number of steps, so that we would have a far higher chance of fully exploring every tile. The number of steps was increased to 1000. To get a good idea on the number of succeeded runs, the number of episodes was set to 100. On multiple runs, it turns out that all 100 episodes generally converge. This could be an indication that the number of steps could actually be lower, resulting in a reduced chance to converge, but faster execution.
+\end{document}

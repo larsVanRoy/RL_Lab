@@ -1,1 +1,1 @@
-from gym_additions.envs.rivercorssing_env import GridworldEnv 
+from gym_additions.envs.rivercrossing_gridworld_env import RiverCrossingEnv

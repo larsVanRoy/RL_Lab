@@ -5,9 +5,9 @@ Complete the code wherever TODO is written.
 """
 # -*- coding: utf-8 -*-
 import numpy as np
-from utils import *
-from agents import *
-from bandit import *
+from lab_session6.bandits.utils import *
+from lab_session6.bandits.agents import *
+from lab_session6.bandits.bandit import *
 
 ## FUNCTIONS ===================================================================
 
@@ -142,11 +142,11 @@ config = {
     'q0': 1
 }
 
-n_runs = 2000
-max_steps = 1000
+n_runs = 500
+max_steps = 10000
 
 ## RUNNING =====================================================================
-kbandit = KBandit(**config)
+kbandit = KBandit_NonStat(**config)
 
 # Un-comment the one you want to use.
 launch_type = 'multiple_agents'
@@ -161,7 +161,7 @@ if launch_type == 'multiple_agents':
     perfs, best_actions = run_multiple_agents(agents, kbandit=kbandit, n_runs=n_runs, max_steps=max_steps)
     # You can change the labels, title and file_name
     labels = ['Random', 'EpsGreedyWA', 'EpsGreedySA']
-    file_name = 'plots/agent_comparison'
+    file_name = '../../plots/agent_comparison'
     suptitle = 'Agent comparison on k-armed-Bandit'
 
 elif launch_type == 'spectrum':

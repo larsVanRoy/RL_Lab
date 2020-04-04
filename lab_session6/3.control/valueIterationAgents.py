@@ -45,6 +45,33 @@ class ValueIterationAgent(ValueEstimationAgent):
         self.values = util.Counter() # A Counter is a dict with default 0
 
         delta = 0.01
+        final_iteration = iterations
+        for iteration in range(iterations):
+            difference = 0
+            for state in self.mdp.getStates():
+                old_value = self.values[state]
+                actions = self.mdp.getPossibleActions(state)
+                if len(actions) == 0:
+                    continue
+
+                q_per_action = np.zeros(len(actions), dtype=np.float)
+                for i in range(len(actions)):
+                    q_per_action[i] = self.computeQValueFromValues(state, actions[i])
+                best_value = q_per_action[np.argmax(q_per_action)]
+                if best_value is not None:
+                    self.values[state] = best_value
+                else:
+                    continue
+
+                difference = max(difference, abs(old_value - self.values[state]))
+
+            print(self.values)
+
+            if difference < delta:
+                final_iteration = iteration + 1
+                break
+
+        print("It took a total of {} iterations to converge.".format(final_iteration))
         # TODO: Implement Value Iteration.
         # Exit either when the number of iterations is reached,
         # OR until convergence (L2 distance < delta).
@@ -63,8 +90,15 @@ class ValueIterationAgent(ValueEstimationAgent):
           value function stored in self.values.
         """
         # TODO: Implement this function according to the doc
-        util.raiseNotDefined()
 
+        states_and_probs = self.mdp.getTransitionStatesAndProbs(state, action)
+        sum = 0
+        for i in range(len(states_and_probs)):
+            new_state, probability = states_and_probs[i]
+            reward = self.mdp.getReward(state, action, new_state)
+            sum += probability * (reward + self.discount * self.values[new_state])
+
+        return sum
 
     def computeActionFromValues(self, state):
         """
@@ -76,7 +110,17 @@ class ValueIterationAgent(ValueEstimationAgent):
           terminal state, you should return None.
         """
         # TODO: Implement according to the doc
-        util.raiseNotDefined()
+        actions = self.mdp.getPossibleActions(state)
+
+        if len(actions) == 0:
+            return None
+
+        sums_per_action = np.zeros(len(actions), dtype=np.float)
+        for i in range(len(actions)):
+            sum_for_action = self.computeQValueFromValues(state, actions[i])
+            if sum_for_action is not None:
+                sums_per_action[i] = sum_for_action
+        return actions[np.argmax(sums_per_action)]
 
     def getPolicy(self, state):
         return self.computeActionFromValues(state)
